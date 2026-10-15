@@ -296,6 +296,7 @@ jobs:
     steps:
       # Mint a short-lived installation token for the shellyctl-release-bot
       # GitHub App (scoped to homebrew-shellyctl) instead of using a PAT.
+      # Install the App on no-std-rs/homebrew-shellyctl before publishing.
       # NOTE: this block is a manual patch on top of `dist generate` output —
       # re-running `dist generate` will drop it and it must be re-applied.
       - name: Mint tap token
@@ -304,12 +305,12 @@ jobs:
         with:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
-          owner: pawelchcki
+          owner: no-std-rs
           repositories: homebrew-shellyctl
       - uses: actions/checkout@v6
         with:
           persist-credentials: true
-          repository: "pawelchcki/homebrew-shellyctl"
+          repository: "no-std-rs/homebrew-shellyctl"
           token: ${{ steps.tap-token.outputs.token }}
       # So we have access to the formula
       - name: Fetch homebrew formulae
