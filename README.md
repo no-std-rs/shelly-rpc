@@ -26,19 +26,19 @@ Skeleton. APIs are placeholders and will change.
 ### macOS / Linux (curl)
 
 ```sh
-curl --proto '=https' --tlsv1.2 -LsSf https://github.com/pawelchcki/shelly-rpc/releases/latest/download/shellyctl-installer.sh | sh
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/no-std-rs/shelly-rpc/releases/latest/download/shellyctl-installer.sh | sh
 ```
 
 ### Windows (PowerShell)
 
 ```powershell
-powershell -c "irm https://github.com/pawelchcki/shelly-rpc/releases/latest/download/shellyctl-installer.ps1 | iex"
+powershell -c "irm https://github.com/no-std-rs/shelly-rpc/releases/latest/download/shellyctl-installer.ps1 | iex"
 ```
 
 ### Homebrew
 
 ```sh
-brew install pawelchcki/shellyctl/shellyctl
+brew install no-std-rs/shellyctl/shellyctl
 ```
 
 ### npm
@@ -50,7 +50,7 @@ npm install -g shellyctl
 ### From source
 
 ```sh
-cargo install --git https://github.com/pawelchcki/shelly-rpc shellyctl
+cargo install --git https://github.com/no-std-rs/shelly-rpc shellyctl
 ```
 
 ### Updating (for curl/PowerShell installs)

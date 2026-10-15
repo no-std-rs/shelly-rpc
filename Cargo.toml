@@ -8,8 +8,8 @@ edition = "2021"
 rust-version = "1.91"
 license = "MIT OR Apache-2.0"
 authors = ["Pawel Chojnacki"]
-repository = "https://github.com/pawelchcki/shelly-rpc"
-homepage = "https://github.com/pawelchcki/shelly-rpc"
+repository = "https://github.com/no-std-rs/shelly-rpc"
+homepage = "https://github.com/no-std-rs/shelly-rpc"
 readme = "README.md"
 
 [workspace.dependencies]
@@ -24,7 +24,7 @@ ci = "github"
 # The installers to generate for each app
 installers = ["shell", "powershell", "npm", "homebrew"]
 # A GitHub repo to push Homebrew formulas to
-tap = "pawelchcki/homebrew-shellyctl"
+tap = "no-std-rs/homebrew-shellyctl"
 # Publish jobs to run in CI
 publish-jobs = ["homebrew", "npm"]
 # Target platforms to build apps for (Rust target-triple syntax)
