@@ -146,11 +146,31 @@ jobs:
       - name: Install dependencies
         run: |
           ${{ matrix.packages_install }}
+      - name: Set Apple Silicon deployment target
+        if: ${{ contains(matrix.targets, 'aarch64-apple-darwin') }}
+        # Keep native dependencies on Rust's minimum instead of the host SDK.
+        run: echo 'MACOSX_DEPLOYMENT_TARGET=11.0' >> "$GITHUB_ENV"
       - name: Build artifacts
         run: |
           # Actually do builds and make zips and whatnot
           dist build ${{ needs.plan.outputs.tag-flag }} --print=linkage --output-format=json ${{ matrix.dist_args }} > dist-manifest.json
           echo "dist ran successfully"
+      - name: Verify Apple Silicon minimum macOS
+        if: ${{ contains(matrix.targets, 'aarch64-apple-darwin') }}
+        run: |
+          python3 - <<'PY'
+          import re
+          import subprocess
+
+          output = subprocess.check_output([
+              "xcrun", "vtool", "-show-build",
+              "target/aarch64-apple-darwin/dist/shellyctl",
+          ], text=True)
+          print(output)
+          versions = re.findall(r"^\s*minos (\d+(?:\.\d+){0,2})\s*$", output, re.MULTILINE)
+          if not versions or any(tuple(map(int, version.split('.'))) + (0,) * (3 - len(version.split('.'))) > (11, 0, 0) for version in versions):
+              raise SystemExit("Apple Silicon binary must support macOS 11.0")
+          PY
       - id: cargo-dist
         name: Post-build
         # We force bash here just because github makes it really hard to get values up
