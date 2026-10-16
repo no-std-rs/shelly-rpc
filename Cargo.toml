@@ -21,6 +21,8 @@ shelly-rpc = { path = "shelly-rpc", version = "0.1.0", default-features = false 
 cargo-dist-version = "0.31.0"
 # CI backends to support
 ci = "github"
+# cargo-dist 0.31 defaults Apple Silicon to the retiring macos-14 image.
+github-custom-runners = { aarch64-apple-darwin = "macos-15" }
 # The installers to generate for each app
 installers = ["shell", "powershell", "npm", "homebrew"]
 # A GitHub repo to push Homebrew formulas to
