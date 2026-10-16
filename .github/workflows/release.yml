@@ -366,11 +366,9 @@ jobs:
           merge-multiple: true
       - uses: actions/setup-node@v6
         with:
-          node-version: '20.x'
+          node-version: '24.x'
           registry-url: 'https://registry.npmjs.org'
-      # npm trusted publishing (OIDC) requires npm >= 11.5.1; node 20.x
-      # ships with npm 10.x which silently falls back to unauthenticated
-      # publish and returns 404.
+      # npm trusted publishing requires Node >= 22.14 and npm >= 11.5.1.
       - run: npm install -g npm@latest
       - run: |
           for release in $(echo "$PLAN" | jq --compact-output '.releases[] | select([.artifacts[] | endswith("-npm-package.tar.gz")] | any)'); do
