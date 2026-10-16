@@ -87,6 +87,8 @@ and an embedded `no_std` build.
 Stable `v<workspace-version>` tags build the binary installers and publish
 `shelly-rpc` followed by `shellyctl` to crates.io. Crate publishing uses the
 `CARGO_REGISTRY_TOKEN` Actions secret, authorized for both crate names.
+Interrupted publications can be retried: an existing version is skipped only
+when its checksum matches the verified local archive and it has not been yanked.
 The Homebrew release App must have access to `no-std-rs/homebrew-shellyctl`,
 and npm trusted publishing must authorize `no-std-rs/shelly-rpc` with workflow
 filename `release.yml`.
