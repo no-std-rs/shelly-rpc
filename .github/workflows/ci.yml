@@ -28,7 +28,7 @@ jobs:
       - name: Check CLI entrypoints
         run: |
           cargo run --locked -p shellyctl -- --help
-          cargo run --locked -p shellyctl -- script upload --help
+          cargo run --locked -p shellyctl -- script shelly.invalid upload --help
           cargo run --locked -p shellyctl -- completions bash | head -n 5
       - name: Verify distributable crates
         run: cargo package --locked --workspace

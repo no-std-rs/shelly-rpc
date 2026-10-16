@@ -14,6 +14,9 @@
 # title/body based on your changelogs.
 
 name: Release
+concurrency:
+  group: release-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 permissions:
   "contents": "write"
 
@@ -367,8 +370,8 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: '24.x'
-          registry-url: 'https://registry.npmjs.org'
       # npm trusted publishing requires Node >= 22.14 and npm >= 11.5.1.
+      # Leave registry-url unset: setup-node's token auth entry blocks OIDC.
       - run: npm install -g npm@latest
       - run: |
           for release in $(echo "$PLAN" | jq --compact-output '.releases[] | select([.artifacts[] | endswith("-npm-package.tar.gz")] | any)'); do
