@@ -286,6 +286,10 @@ jobs:
           gh release create "${{ needs.plan.outputs.tag }}" --target "$RELEASE_COMMIT" $PRERELEASE_FLAG --title "$ANNOUNCEMENT_TITLE" --notes-file "$RUNNER_TEMP/notes.txt" artifacts/*
 
   publish-homebrew-formula:
+    concurrency:
+      group: homebrew-publishing
+      queue: max
+      cancel-in-progress: false
     needs:
       - plan
       - host
@@ -320,7 +324,7 @@ jobs:
         uses: actions/download-artifact@v7
         with:
           pattern: artifacts-*
-          path: Formula/
+          path: incoming-formulae/
           merge-multiple: true
       # This is extra complex because you can make your Formula name not match your app name
       # so we need to find releases with a *.rb file, and publish with that filename.
@@ -336,11 +340,27 @@ jobs:
 
             export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
             brew update
+            # cargo-dist emits an explicit version stanza. Inspect the current
+            # tap before copying artifacts, so late older tags cannot downgrade it.
+            if [ -f "Formula/${filename}" ]; then
+              current_version=$(sed -nE 's/^[[:space:]]*version "([^"]+)"[[:space:]]*$/\1/p' "Formula/${filename}")
+              test -n "$current_version"
+              should_publish=$(brew ruby -r version -e 'puts(Version.new(ARGV.fetch(0)) > Version.new(ARGV.fetch(1)))' -- "$version" "$current_version")
+              if [ "$should_publish" = false ]; then
+                echo "${name} ${current_version} is already current; skipping ${version}"
+                continue
+              fi
+              test "$should_publish" = true
+            fi
+            mkdir -p Formula
+            cp "incoming-formulae/${filename}" "Formula/${filename}"
             # We avoid reformatting user-provided data such as the app description and homepage.
             brew style --except-cops FormulaAudit/Homepage,FormulaAudit/Desc,FormulaAuditStrict --fix "Formula/${filename}" || true
 
             git add "Formula/${filename}"
-            git commit -m "${name} ${version}"
+            if ! git diff --cached --quiet; then
+              git commit -m "${name} ${version}"
+            fi
           done
           git push
 
