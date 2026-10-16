@@ -16,9 +16,11 @@ jobs:
       - run: |
           # Require a completed no-findings result from the trusted bot for this head.
           for i in $(seq 1 60); do
-            got=$(gh api "repos/$REPO/issues/$PR_NUMBER/comments?per_page=100" --paginate --slurp \
-              --jq "[.[][] | select(.user.login == \"chatgpt-codex-connector[bot]\") | .body | capture(\"codex-review-state:v1 (?<state>.*) -->\") | .state | fromjson | .code_review | select(.commit_sha == \"$PR_HEAD\" and .status == \"completed\" and .has_any_findings == false and .has_unresolved_findings == false)] | length")
-            [ "$got" -gt 0 ] && exit 0
+            counts=$(gh api "repos/$REPO/issues/$PR_NUMBER/comments?per_page=100" --paginate \
+              --jq "[.[] | select(.user.login == \"chatgpt-codex-connector[bot]\") | .body | capture(\"codex-review-state:v1 (?<state>.*) -->\") | .state | fromjson | .code_review | select(.commit_sha == \"$PR_HEAD\" and .status == \"completed\" and .has_any_findings == false and .has_unresolved_findings == false)] | length")
+            for got in $counts; do
+              [ "$got" -gt 0 ] && exit 0
+            done
             sleep 10
           done
           echo "No clean Codex review for this head within 10 min" >&2
